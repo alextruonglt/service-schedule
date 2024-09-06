@@ -3,33 +3,46 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-
+import { createUser } from "@/lib/actions/client.actions"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import CustomFormField from "../CustomFormField"
 import SubmitButton from "../SubmitButton"
 import { useState } from "react"
-const formSchema = z.object({
-	username: z.string().min(2, {
-		message: "Username must be at least 2 characters.",
-	}),
-})
+import { UserFormValidation } from "../../lib/validation"
+import { useRouter } from "next/navigation"
 
 export function PatientForm() {
+	const router = useRouter()
 	const [isLoading, setIsLoading] = useState(false)
 
 	// 1. Define your form.
 	const form = useForm({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(UserFormValidation),
 		defaultValues: {
 			username: "",
+			name: "",
+			phone: "",
 		},
 	})
 
 	// 2. Define a submit handler.
-	function onSubmit(values) {
-		// Do something with the form values.
-		console.log(values)
+	async function onSubmit({ name, email, phone }) {
+		setIsLoading(true)
+		try {
+			const userData = { name, email, phone }
+			console.log("Submitting user data:", userData)
+
+			// we'll pass the user data eventually
+			const user = await createUser(userData)
+			console.log("User creation result:", user) // Log the result of createUser
+
+			if (user) router.push(`/patients/${user.$id}/register`)
+		} catch (error) {
+			console.error("User creation failed:", error) // Log any errors from createUser
+		}
+		setIsLoading(false)
+		console.log({ name, email, phone })
 	}
 
 	return (

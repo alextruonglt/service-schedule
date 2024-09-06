@@ -32,6 +32,7 @@ const RenderInput = ({ field, props }) => {
 						<Input
 							placeholder={placeholder}
 							{...field}
+							value={field.value || ""} // Ensure it's controlled
 							className="shad-input border-0"
 						/>
 					</FormControl>
@@ -45,7 +46,7 @@ const RenderInput = ({ field, props }) => {
 						placeholder={placeholder}
 						international
 						withCountryCallingCode
-						value={field.value || null}
+						value={field.value || ""}
 						onChange={field.onChange}
 						className="input-phone"
 					/>
